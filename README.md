@@ -4,9 +4,13 @@
 
 ## What is available here
 
-This **public** repository currently contains a project description, a static web page in [`web/`](web/), and a proposed [public/private ownership and publication boundary](docs/public-private-boundary.md). The working Achillea SDK, Pentalpha game engine, and Asterwild application currently live together in a separate **private** development repository; they are **not published SDKs or supported public packages**.
+This **public** repository currently contains a project description, a static web page in [`web/`](web/), a draft architecture specification, and a proposed [public/private ownership and publication boundary](docs/public-private-boundary.md). The working Achillea SDK, Pentalpha game engine, and Asterwild application currently live together in a separate **private** development repository; they are **not published SDKs or supported public packages**.
 
 The first private product milestone is a local, account-free Pentalpha experience. Hosted multiplayer, accounts, location features and AI-driven adaptation are future possibilities, not shipping capabilities of this public repository.
+
+## Architecture specification (draft)
+
+A [language-neutral application state/effect contract](docs/specifications/application-state-effects-v0.1.md) and [synthetic conformance traces](docs/specifications/conformance/application-cycle-v0.1.json) are available for review. They deliberately distinguish current behavior from **unresolved** dispatch, lifecycle and failure semantics. No implementation has been certified against these fixtures and no public runtime or SDK has been released.
 
 ## Platform direction
 
