@@ -1,0 +1,193 @@
+{
+  "schemaVersion": "0.1-draft",
+  "status": "proposal-only; no implementation certified",
+  "description": "Language-neutral logical event traces for single-threaded, non-reentrant dispatch with manually controlled effect completion. State equality on NO_CHANGE means exact same snapshot is returned, not structural equality of a newly allocated value.",
+  "events": [
+    "dispatch",
+    "reduce",
+    "publish",
+    "effect_invoked",
+    "effect_completion"
+  ],
+  "scenarios": [
+    {
+      "id": "effect-followup-on-current-state",
+      "initialState": {
+        "phase": "idle",
+        "count": 0
+      },
+      "intents": [
+        {
+          "type": "BEGIN",
+          "payload": null,
+          "when": "initial dispatch"
+        },
+        {
+          "type": "COMPLETE",
+          "payload": {
+            "increment": 1
+          },
+          "when": "test-controlled completion of the BEGIN effect"
+        }
+      ],
+      "reducerContract": [
+        {
+          "on": "BEGIN",
+          "stateChange": {
+            "phase": "working",
+            "count": 0
+          }
+        },
+        {
+          "on": "COMPLETE",
+          "stateChange": {
+            "phase": "ready",
+            "count": 1
+          }
+        }
+      ],
+      "effectContract": [
+        {
+          "on": "BEGIN",
+          "action": "wait for test signal, then dispatch COMPLETE"
+        },
+        {
+          "on": "COMPLETE",
+          "action": "none"
+        }
+      ],
+      "expectedTrace": [
+        {
+          "event": "dispatch",
+          "intent": "BEGIN"
+        },
+        {
+          "event": "reduce",
+          "intent": "BEGIN",
+          "before": {
+            "phase": "idle",
+            "count": 0
+          },
+          "after": {
+            "phase": "working",
+            "count": 0
+          }
+        },
+        {
+          "event": "publish",
+          "state": {
+            "phase": "working",
+            "count": 0
+          }
+        },
+        {
+          "event": "effect_invoked",
+          "intent": "BEGIN",
+          "observedState": {
+            "phase": "working",
+            "count": 0
+          }
+        },
+        {
+          "event": "effect_completion",
+          "intent": "BEGIN",
+          "followUp": "COMPLETE"
+        },
+        {
+          "event": "dispatch",
+          "intent": "COMPLETE"
+        },
+        {
+          "event": "reduce",
+          "intent": "COMPLETE",
+          "before": {
+            "phase": "working",
+            "count": 0
+          },
+          "after": {
+            "phase": "ready",
+            "count": 1
+          }
+        },
+        {
+          "event": "publish",
+          "state": {
+            "phase": "ready",
+            "count": 1
+          }
+        },
+        {
+          "event": "effect_invoked",
+          "intent": "COMPLETE",
+          "observedState": {
+            "phase": "ready",
+            "count": 1
+          }
+        }
+      ],
+      "expectedFinalState": {
+        "phase": "ready",
+        "count": 1
+      },
+      "notes": "The test driver releases BEGIN's pending effect only after effect_invoked. COMPLETE must reduce the then-current state. No wall-clock ordering or framework observer timing is asserted."
+    },
+    {
+      "id": "unchanged-reduction-still-invokes-effect",
+      "initialState": {
+        "phase": "idle",
+        "count": 0
+      },
+      "intents": [
+        {
+          "type": "NO_CHANGE",
+          "payload": null,
+          "when": "initial dispatch"
+        }
+      ],
+      "reducerContract": [
+        {
+          "on": "NO_CHANGE",
+          "stateChange": "return the identical existing snapshot"
+        }
+      ],
+      "effectContract": [
+        {
+          "on": "NO_CHANGE",
+          "action": "record an effect invocation; no follow-up"
+        }
+      ],
+      "expectedTrace": [
+        {
+          "event": "dispatch",
+          "intent": "NO_CHANGE"
+        },
+        {
+          "event": "reduce",
+          "intent": "NO_CHANGE",
+          "before": {
+            "phase": "idle",
+            "count": 0
+          },
+          "after": {
+            "phase": "idle",
+            "count": 0
+          }
+        },
+        {
+          "event": "effect_invoked",
+          "intent": "NO_CHANGE",
+          "observedState": {
+            "phase": "idle",
+            "count": 0
+          }
+        }
+      ],
+      "expectedFinalState": {
+        "phase": "idle",
+        "count": 0
+      },
+      "notes": "No publish event is expected because the reducer retained the original snapshot; effect invocation is still required. This does not specify structural equality for a newly allocated equivalent snapshot."
+    }
+  ],
+  "excluded": "Concurrent effects, nested observer dispatch, cancellation, error propagation, stale results, privilege checks, render order and implementation-specific equality are intentionally out of scope; see the draft contract."
+}
