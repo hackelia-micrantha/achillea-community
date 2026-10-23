@@ -61,6 +61,12 @@ def validate_documents(root: Path) -> list[str]:
     if not docs:
         findings.append("No public Markdown documents found")
     for doc in docs:
+        if not doc.resolve().is_relative_to(root):
+            findings.append(f"{doc.relative_to(root)}: Markdown path escapes repository")
+            continue
+        if not doc.is_file():
+            findings.append(f"{doc.relative_to(root)}: Markdown target is not a readable file")
+            continue
         fence: tuple[str, int] | None = None
         for line_no, line in enumerate(doc.read_text(encoding="utf-8").splitlines(), 1):
             matched = FENCE.match(line)
