@@ -25,6 +25,10 @@ Product-specific application code, operations, unreleased assets and private dat
 
 See [the proposed repository boundary](docs/public-private-boundary.md) for the intended ownership, dependency direction, promotion checklist and incremental migration order. The document is a proposal until accepted.
 
+## Documentation maintenance
+
+This public documentation and site surface adopts the [shared Micrantha documentation-sync process](docs/documentation-maintenance.md). Its project-owned contract records the public/private authority split, unreleased SDK and draft-specification claim limits, current manual validation, and the separate hosted public-validation work.
+
 ## Contributing and use
 
 Contributions to this repository can improve the public website and documentation through a pull request. Do not submit private repository content, production configuration, credentials, personally identifying or sensitive location data, copyrighted source-book excerpts, or third-party assets without confirmed redistribution rights.
