@@ -101,5 +101,61 @@ class PublicValidationTests(unittest.TestCase):
         self.assertIn("Missing public site", "\n".join(validate_documents(self.root)))
 
 
+    def test_outside_site_symlink_is_rejected(self) -> None:
+        site = self.root / "web/index.html"
+        site.unlink()
+        outside = self.root.parent / (self.root.name + "-outside-site.html")
+        outside.write_text('<a href="missing.html">outside</a>', encoding="utf-8")
+        self.addCleanup(outside.unlink)
+        site.symlink_to(outside)
+        self.assertIn("escapes repository", "\n".join(validate_documents(self.root)))
+
+    def test_reference_style_targets_and_undefined_labels(self) -> None:
+        self.write("README.md", "[first][known] [second][absent]\n[known]: docs/missing.md\n")
+        result = "\n".join(validate_documents(self.root))
+        self.assertIn("missing link target", result)
+        self.assertIn("undefined reference label: absent", result)
+
+    def test_valid_reference_style_links_and_collapsed_form(self) -> None:
+        self.write("README.md", "[spec][Known] [Known][]\n[known]: docs/spec.md\n")
+        self.assertEqual([], validate_documents(self.root))
+
+    def test_reference_definition_inside_code_is_ignored(self) -> None:
+        tick = chr(96)
+        self.write("README.md", f"{tick * 3}\n[ref]: docs/absent.md\n{tick * 3}\n")
+        self.assertEqual([], validate_documents(self.root))
+
+    def test_invalid_contract_array_entries_are_rejected(self) -> None:
+        candidate = fixture()
+        scenario = candidate["scenarios"][0]
+        scenario["intents"] = [None]
+        scenario["reducerContract"] = ["malformed"]
+        scenario["effectContract"] = [{}]
+        result = "\n".join(validate_fixture(candidate))
+        self.assertIn("intents[0] requires object", result)
+        self.assertIn("reducerContract[0] requires object", result)
+        self.assertIn("effectContract[0] requires object", result)
+
+    def test_missing_contract_discriminators_fail(self) -> None:
+        candidate = fixture()
+        scenario = candidate["scenarios"][0]
+        scenario["intents"] = [{}]
+        scenario["reducerContract"] = [{"on": "BEGIN"}]
+        scenario["effectContract"] = [{"on": "BEGIN"}]
+        result = "\n".join(validate_fixture(candidate))
+        self.assertIn("nonempty type", result)
+        self.assertIn("missing stateChange", result)
+        self.assertIn("missing action", result)
+
+    def test_symlinked_json_cannot_escape_checkout(self) -> None:
+        target = self.root / "docs/specifications/conformance/application-cycle-v0.1.json"
+        target.unlink()
+        outside = self.root.parent / (self.root.name + "-outside-fixture.json")
+        outside.write_text(json.dumps(fixture()), encoding="utf-8")
+        self.addCleanup(outside.unlink)
+        target.symlink_to(outside)
+        self.assertIn("JSON file escapes repository", "\n".join(validate_repository(self.root)))
+
+
 if __name__ == "__main__":
     unittest.main()
