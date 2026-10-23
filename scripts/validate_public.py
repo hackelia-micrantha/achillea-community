@@ -18,6 +18,12 @@ INLINE_CODE = re.compile(r"(?<![\\\x60])(\x60+)(?!\x60)(.*?)(?<!\\)\1(?!\x60)")
 INLINE_LINK = re.compile(
     r"""(?<!\\)!?\[[^\]\n]*\]\(\s*(?P<url><[^>\n]+>|[^\s)]+)(?:\s+(?:"[^"\n]*"|'[^'\n]*'))?\s*\)"""
 )
+REFERENCE_DEF = re.compile(r"^ {0,3}\[(?P<label>[^\]\n]+)\]:\s*(?P<url><[^>\n]+>|[^\s]+)")
+REFERENCE_USE = re.compile(r"(?<!\\)!?\[(?P<text>[^\]\n]*)\]\[(?P<label>[^\]\n]*)\]")
+
+
+def normalize_reference(label: str) -> str:
+    return " ".join(label.split()).casefold()
 
 
 class SiteLinks(HTMLParser):
@@ -68,6 +74,8 @@ def validate_documents(root: Path) -> list[str]:
             findings.append(f"{doc.relative_to(root)}: Markdown target is not a readable file")
             continue
         fence: tuple[str, int] | None = None
+        definitions: dict[str, str] = {}
+        usages: list[tuple[int, str]] = []
         for line_no, line in enumerate(doc.read_text(encoding="utf-8").splitlines(), 1):
             matched = FENCE.match(line)
             if fence is not None:
@@ -83,10 +91,26 @@ def validate_documents(root: Path) -> list[str]:
                 fence = (marker[0], len(marker))
                 continue
             prose = INLINE_CODE.sub(lambda m: " " * len(m.group()), line)
+            definition = REFERENCE_DEF.match(prose)
+            if definition:
+                label = normalize_reference(definition.group("label"))
+                if label in definitions:
+                    findings.append(f"{doc.relative_to(root)}:{line_no}: duplicate reference label: {label}")
+                definitions[label] = definition.group("url")
+                findings.extend(validate_link(root, doc, line_no, definition.group("url")))
+                continue
             for match in INLINE_LINK.finditer(prose):
                 findings.extend(validate_link(root, doc, line_no, match.group("url")))
+            for match in REFERENCE_USE.finditer(prose):
+                label = normalize_reference(match.group("label") or match.group("text"))
+                usages.append((line_no, label))
+        for line_no, label in usages:
+            if label not in definitions:
+                findings.append(f"{doc.relative_to(root)}:{line_no}: undefined reference label: {label}")
     site = root / "web/index.html"
-    if not site.is_file():
+    if not site.resolve().is_relative_to(root):
+        findings.append("Public site web/index.html escapes repository")
+    elif not site.is_file():
         findings.append("Missing public site web/index.html")
     else:
         parser = SiteLinks()
@@ -127,9 +151,18 @@ def validate_fixture(data: object) -> list[str]:
         for key in ("initialState", "expectedFinalState"):
             if not isinstance(scenario.get(key), dict):
                 findings.append(f"{label}.{key} must be an object")
-        for key in ("intents", "reducerContract", "effectContract"):
-            if not isinstance(scenario.get(key), list) or not scenario[key]:
+        for key, discriminator in (("intents", "type"), ("reducerContract", "on"), ("effectContract", "on")):
+            records = scenario.get(key)
+            if not isinstance(records, list) or not records:
                 findings.append(f"{label}.{key} must be a nonempty list")
+                continue
+            for item_index, record in enumerate(records):
+                if not isinstance(record, dict) or not isinstance(record.get(discriminator), str) or not record[discriminator].strip():
+                    findings.append(f"{label}.{key}[{item_index}] requires object with nonempty {discriminator}")
+                elif key == "reducerContract" and "stateChange" not in record:
+                    findings.append(f"{label}.{key}[{item_index}] missing stateChange")
+                elif key == "effectContract" and not isinstance(record.get("action"), str):
+                    findings.append(f"{label}.{key}[{item_index}] missing action")
         trace = scenario.get("expectedTrace")
         if not isinstance(trace, list) or not trace:
             findings.append(f"{label}.expectedTrace must be a nonempty list")
@@ -147,6 +180,12 @@ def validate_repository(root: Path) -> list[str]:
     if not files:
         findings.append("No public JSON files found")
     for file in files:
+        if not file.resolve().is_relative_to(root):
+            findings.append(f"{file.relative_to(root)}: JSON file escapes repository")
+            continue
+        if not file.is_file():
+            findings.append(f"{file.relative_to(root)}: JSON path is not a file")
+            continue
         try:
             data = json.loads(file.read_text(encoding="utf-8"))
         except (UnicodeError, json.JSONDecodeError) as error:
