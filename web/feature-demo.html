@@ -144,8 +144,26 @@
       try {
         const response = await fetch(FILE, { credentials: "omit", cache: "no-store" });
         if (!response.ok) throw new Error("Feature file not available.");
-        const body = await response.text();
-        if (body.length > MAX_BYTES) throw new Error("Feature file too large.");
+        const announcedLength = Number(response.headers.get("content-length") || 0);
+        if (announcedLength > MAX_BYTES) throw new Error("Feature file too large.");
+        if (!response.body) throw new Error("Streaming response required.");
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let bytesRead = 0;
+        let body = "";
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            bytesRead += value.byteLength;
+            if (bytesRead > MAX_BYTES) throw new Error("Feature file too large.");
+            body += decoder.decode(value, { stream: true });
+          }
+          body += decoder.decode();
+        } finally {
+          await reader.cancel().catch(() => {});
+          reader.releaseLock();
+        }
         pack = validate(JSON.parse(body));
         index = 0;
         foundCount = 0;
