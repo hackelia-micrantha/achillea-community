@@ -1,0 +1,27 @@
+name: Public contract validation
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+# Fork pull requests carry untrusted source: no privileged runner, write
+# permissions, secret injection, or deployment through this workflow.
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate public docs and draft traces
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out public source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Run offline public-validator regression suite
+        run: python3 -m unittest discover -s tests -p 'test_*.py' -v
+      - name: Check public JSON and document paths
+        run: python3 scripts/validate_public.py

@@ -12,6 +12,10 @@ The first private product milestone is a local, account-free Pentalpha experienc
 
 A [language-neutral application state/effect contract](docs/specifications/application-state-effects-v0.1.md) and [synthetic conformance traces](docs/specifications/conformance/application-cycle-v0.1.json) are available for review. They deliberately distinguish current behavior from **unresolved** dispatch, lifecycle and failure semantics. No implementation has been certified against these fixtures and no public runtime or SDK has been released.
 
+## Public contract validation
+
+Run `python3 -m unittest discover -s tests -p 'test_*.py' -v` and `python3 scripts/validate_public.py` in a clean public checkout. The same read-only, credential-free checks run on GitHub-hosted PR and `main` jobs. They validate local README/docs/site links, JSON syntax, draft scenario IDs and expected trace shapes; **they do not certify an SDK, runtime behavior, release, or deployed website**. See [public-validation issue #6](https://github.com/hackelia-micrantha/achillea-community/issues/6) for remaining source-to-Cloudflare deployment configuration and publication gates.
+
 ## Platform direction
 
 The proposed public surface is intentionally bounded:
