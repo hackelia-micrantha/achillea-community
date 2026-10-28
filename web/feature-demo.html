@@ -143,9 +143,17 @@
       nodes.status.textContent = "Fetching static JSON example from this site…";
       try {
         const response = await fetch(FILE, { credentials: "omit", cache: "no-store" });
-        if (!response.ok) throw new Error("Feature file not available.");
+        // Cancel rejected response bodies before the stream reader is acquired.
+        // Otherwise the browser may continue transferring a discarded payload.
+        if (!response.ok) {
+          await response.body?.cancel().catch(() => {});
+          throw new Error("Feature file not available.");
+        }
         const announcedLength = Number(response.headers.get("content-length") || 0);
-        if (announcedLength > MAX_BYTES) throw new Error("Feature file too large.");
+        if (announcedLength > MAX_BYTES) {
+          await response.body?.cancel().catch(() => {});
+          throw new Error("Feature file too large.");
+        }
         if (!response.body) throw new Error("Streaming response required.");
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
