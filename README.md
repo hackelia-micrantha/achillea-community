@@ -12,6 +12,15 @@ The first private product milestone is a local, account-free Pentalpha experienc
 
 A [language-neutral application state/effect contract](docs/specifications/application-state-effects-v0.1.md) and [synthetic conformance traces](docs/specifications/conformance/application-cycle-v0.1.json) are available for review. They deliberately distinguish current behavior from **unresolved** dispatch, lifecycle and failure semantics. No implementation has been certified against these fixtures and no public runtime or SDK has been released.
 
+## Architecture and public feature illustration
+
+- [Current architecture and proposed downloadable-feature diagrams](docs/architecture.md): distinguishes today's bundled Expo/React Native Pentalpha implementation from a **future** data-only feature-pack admission path.
+- [Shape Hunt public example](web/feature-demo.html) and [sample JSON](web/examples/shape-hunt.v1.json): a synthetic, standalone browser illustration. The page fetches JSON on demand and renders it using already-installed browser code; it is **not** an Achillea SDK, app extension, or signed/offline production loader.
+- [Example contract and trust boundaries](docs/examples/downloadable-feature.md): documents capability constraints, source separation, and missing production controls.
+- [Earlier Expo hackathon prototype](https://github.com/ryjen/cactus-hackathon): design reference for mobile prototyping, not evidence of shared source or a completed Achillea downloadable-feature implementation.
+
+Downloaded executable code, a production feature catalog, signature verification, offline pack installation, and host/runtime version negotiation **are not currently shipped**. The working game SDK, concrete game engine, and Asterwild source remain private pending review and release gates.
+
 ## Platform direction
 
 The proposed public surface is intentionally bounded:
