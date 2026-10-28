@@ -20,6 +20,10 @@ INLINE_LINK = re.compile(
 )
 REFERENCE_DEF = re.compile(r"^ {0,3}\[(?P<label>[^\]\n]+)\]:\s*(?P<url><[^>\n]+>|[^\s]+)")
 REFERENCE_USE = re.compile(r"(?<!\\)!?\[(?P<text>[^\]\n]*)\]\[(?P<label>[^\]\n]*)\]")
+REFERENCE_DEF_PENDING = re.compile(r"^ {0,3}\[(?P<label>[^\]\n]+)\]:[ \t]*$")
+REFERENCE_NEXT_URL = re.compile(
+    r"""^ {1,3}(?P<url><[^>\n]+>|[^\s]+)(?:[ \t]+(?:"[^"\n]*"|'[^'\n]*'))?[ \t]*$"""
+)
 
 
 def normalize_reference(label: str) -> str:
@@ -76,8 +80,22 @@ def validate_documents(root: Path) -> list[str]:
         fence: tuple[str, int] | None = None
         definitions: dict[str, str] = {}
         usages: list[tuple[int, str]] = []
+        pending_definition: str | None = None
         for line_no, line in enumerate(doc.read_text(encoding="utf-8").splitlines(), 1):
             matched = FENCE.match(line)
+            if pending_definition is not None:
+                continuation = REFERENCE_NEXT_URL.match(line) if not matched else None
+                if continuation:
+                    url = continuation.group("url")
+                    if pending_definition in definitions:
+                        findings.append(
+                            f"{doc.relative_to(root)}:{line_no}: duplicate reference label: {pending_definition}"
+                        )
+                    definitions[pending_definition] = url
+                    findings.extend(validate_link(root, doc, line_no, url))
+                    pending_definition = None
+                    continue
+                pending_definition = None
             if fence is not None:
                 if matched:
                     marker = matched.group("marker")
@@ -91,6 +109,10 @@ def validate_documents(root: Path) -> list[str]:
                 fence = (marker[0], len(marker))
                 continue
             prose = INLINE_CODE.sub(lambda m: " " * len(m.group()), line)
+            pending = REFERENCE_DEF_PENDING.match(prose)
+            if pending:
+                pending_definition = normalize_reference(pending.group("label"))
+                continue
             definition = REFERENCE_DEF.match(prose)
             if definition:
                 label = normalize_reference(definition.group("label"))
@@ -180,6 +202,8 @@ def validate_repository(root: Path) -> list[str]:
     if not files:
         findings.append("No public JSON files found")
     for file in files:
+        if file.relative_to(root) == CONFORMANCE_PATH:
+            continue  # The mandatory fixture is parsed and validated independently.
         if not file.resolve().is_relative_to(root):
             findings.append(f"{file.relative_to(root)}: JSON file escapes repository")
             continue
@@ -191,10 +215,20 @@ def validate_repository(root: Path) -> list[str]:
         except (UnicodeError, json.JSONDecodeError) as error:
             findings.append(f"{file.relative_to(root)}: invalid JSON: {error}")
             continue
-        if file.relative_to(root) == CONFORMANCE_PATH:
-            findings.extend(validate_fixture(data))
-    if not (root / CONFORMANCE_PATH).is_file():
+    # The required contract must be checked by its own path. rglob() does not
+    # traverse directory symlinks, so discovery alone is not an admission gate.
+    fixture_path = root / CONFORMANCE_PATH
+    if not fixture_path.resolve().is_relative_to(root):
+        findings.append(f"Public conformance fixture escapes repository: {CONFORMANCE_PATH}")
+    elif not fixture_path.is_file():
         findings.append(f"Missing public conformance fixture: {CONFORMANCE_PATH}")
+    else:
+        try:
+            fixture = json.loads(fixture_path.read_text(encoding="utf-8"))
+        except (UnicodeError, json.JSONDecodeError) as error:
+            findings.append(f"{CONFORMANCE_PATH}: invalid JSON: {error}")
+        else:
+            findings.extend(validate_fixture(fixture))
     return findings
 
 
