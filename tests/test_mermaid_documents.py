@@ -32,7 +32,7 @@ class ArchitectureMermaidTests(unittest.TestCase):
                 self.assertNotIn(";", message, f"Mermaid message may break at semicolon: {line}")
                 self.assertNotRegex(message, r"&#\d+;", f"Encoded separator not allowed: {line}")
         self.assertIn("else Admission allowed", sequence)
-        self.assertIn("end", sequence.splitlines())
+        self.assertIn("  end", sequence.splitlines())
 
 
 if __name__ == "__main__":
