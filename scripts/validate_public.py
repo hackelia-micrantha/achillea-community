@@ -219,7 +219,7 @@ def validate_repository(root: Path) -> list[str]:
     # traverse directory symlinks, so discovery alone is not an admission gate.
     fixture_path = root / CONFORMANCE_PATH
     if not fixture_path.resolve().is_relative_to(root):
-        findings.append(f"Public conformance fixture escapes repository: {CONFORMANCE_PATH}")
+        findings.append(f"{CONFORMANCE_PATH}: JSON file escapes repository")
     elif not fixture_path.is_file():
         findings.append(f"Missing public conformance fixture: {CONFORMANCE_PATH}")
     else:
