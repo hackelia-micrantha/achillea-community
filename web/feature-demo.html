@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Shape Hunt — Achillea public feature illustration</title>
+  <style>
+    :root { color-scheme: light; font-family: Inter, system-ui, sans-serif; background: #f6f8f7; color: #0f1412; }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 2rem 1rem; }
+    main { max-width: 680px; margin: 0 auto; padding: 2rem; border: 1px solid #d9dfda; border-radius: 20px; background: white; }
+    h1 { margin: .3rem 0; font-size: 2rem; }
+    h2 { margin-top: 1.5rem; }
+    p { line-height: 1.5; }
+    .muted { color: #53625c; }
+    .eyebrow { text-transform: uppercase; letter-spacing: .09em; font-weight: 700; font-size: .75rem; }
+    button { border: 1px solid #254d39; background: #355f49; color: white; border-radius: 8px; padding: .7rem 1rem; font: inherit; cursor: pointer; }
+    button.secondary { background: white; color: #254d39; }
+    button:disabled { opacity: .5; cursor: default; }
+    button:focus-visible, a:focus-visible { outline: 3px solid #087e77; outline-offset: 3px; }
+    .actions { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1rem; }
+    .divider { border-top: 1px solid #d9dfda; padding-top: 1rem; margin-top: 1.5rem; }
+    .notice { background: #f0f4f1; border-radius: 8px; padding: .8rem 1rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">Achillea · Public feature illustration</p>
+    <h1>Shape Hunt</h1>
+    <p>This independent browser demo illustrates <strong>on-demand declarative feature content</strong>. The browser fetches a fixed same-origin JSON example; installed page code renders it. No executable code is downloaded.</p>
+    <p class="notice">Not an Achillea/Asterwild SDK, production package loader, released mobile app, or proof of signed offline installation.</p>
+    <div class="actions">
+      <button id="load" type="button">Download sample feature</button>
+      <a href="./index.html">Achillea overview</a>
+    </div>
+    <p id="status" role="status" aria-live="polite">Sample content has not been fetched.</p>
+    <section id="activity" hidden class="divider" aria-live="polite">
+      <p id="progress" class="muted"></p>
+      <h2 id="step-title"></h2>
+      <p id="step-hint"></p>
+      <div class="actions">
+        <button id="found" type="button">Found it</button>
+        <button id="skip" type="button" class="secondary">Skip</button>
+      </div>
+    </section>
+    <section id="summary" hidden class="divider" aria-live="polite">
+      <h2>Activity complete</h2>
+      <p id="result"></p>
+      <button id="again" type="button" class="secondary">Repeat locally</button>
+    </section>
+    <p class="muted divider">The example does not request camera, geolocation, storage, accounts, or credentials. Responses remain in this page's memory and are cleared on reload. See <a href="../docs/architecture.md">architecture and trust boundaries</a>.</p>
+  </main>
+  <script>
+    "use strict";
+
+    // This page's renderer and event handlers are bundled. No pack-supplied code is executed.
+    const FILE = "./examples/shape-hunt.v1.json";
+    const SCHEMA = "achillea.public-demo.feature/v1";
+    const RENDERER = "guided-checklist/v1";
+    const MAX_TEXT = 180;
+    const MAX_BYTES = 12000;
+    const STEP_COUNT = 3;
+    const STEP_KEYS = ["hint", "id", "prompt"];
+    const PACK_KEYS = ["description", "id", "renderer", "schema", "steps", "title", "version"];
+
+    const nodes = {
+      load: document.getElementById("load"),
+      status: document.getElementById("status"),
+      activity: document.getElementById("activity"),
+      progress: document.getElementById("progress"),
+      title: document.getElementById("step-title"),
+      hint: document.getElementById("step-hint"),
+      found: document.getElementById("found"),
+      skip: document.getElementById("skip"),
+      summary: document.getElementById("summary"),
+      result: document.getElementById("result"),
+      again: document.getElementById("again")
+    };
+
+    let pack = null;
+    let index = 0;
+    let foundCount = 0;
+
+    function isObject(value) {
+      return value !== null && typeof value === "object" && !Array.isArray(value);
+    }
+
+    function exactKeys(value, expected) {
+      return isObject(value) &&
+        Object.keys(value).sort().join(",") === expected.slice().sort().join(",");
+    }
+
+    function boundedText(value) {
+      return typeof value === "string" && value.length > 0 && value.length <= MAX_TEXT;
+    }
+
+    function validate(raw) {
+      if (!exactKeys(raw, PACK_KEYS) ||
+          raw.schema !== SCHEMA || raw.id !== "shape-hunt" ||
+          raw.version !== "1.0.0" || raw.renderer !== RENDERER ||
+          !boundedText(raw.title) || !boundedText(raw.description) ||
+          !Array.isArray(raw.steps) || raw.steps.length !== STEP_COUNT) {
+        throw new Error("Unsupported or invalid feature definition.");
+      }
+
+      const seen = new Set();
+      for (const step of raw.steps) {
+        if (!exactKeys(step, STEP_KEYS) ||
+            !boundedText(step.id) || !/^[a-z0-9-]+$/.test(step.id) ||
+            !boundedText(step.prompt) || !boundedText(step.hint) ||
+            seen.has(step.id)) {
+          throw new Error("Invalid or duplicate activity step.");
+        }
+        seen.add(step.id);
+      }
+      return raw;
+    }
+
+    function render() {
+      const done = index >= pack.steps.length;
+      nodes.activity.hidden = done;
+      nodes.summary.hidden = !done;
+      if (done) {
+        nodes.result.textContent = "You found " + foundCount + " of " + pack.steps.length +
+          " shapes. Responses were not saved or transmitted.";
+      } else {
+        const step = pack.steps[index];
+        nodes.progress.textContent = "Step " + (index + 1) + " of " + pack.steps.length;
+        nodes.title.textContent = step.prompt;
+        nodes.hint.textContent = step.hint;
+      }
+    }
+
+    function advance(wasFound) {
+      if (!pack || index >= pack.steps.length) return;
+      if (wasFound) foundCount++;
+      index++;
+      render();
+    }
+
+    nodes.load.addEventListener("click", async () => {
+      nodes.load.disabled = true;
+      nodes.status.textContent = "Fetching static JSON example from this site…";
+      try {
+        const response = await fetch(FILE, { credentials: "omit", cache: "no-store" });
+        if (!response.ok) throw new Error("Feature file not available.");
+        const body = await response.text();
+        if (body.length > MAX_BYTES) throw new Error("Feature file too large.");
+        pack = validate(JSON.parse(body));
+        index = 0;
+        foundCount = 0;
+        nodes.status.textContent = "Validated data-only feature loaded: " + pack.title + ".";
+        render();
+      } catch (_error) {
+        pack = null;
+        nodes.activity.hidden = true;
+        nodes.summary.hidden = true;
+        nodes.status.textContent = "Feature unavailable or invalid. No activity was activated.";
+      } finally {
+        nodes.load.disabled = false;
+      }
+    });
+
+    nodes.found.addEventListener("click", () => advance(true));
+    nodes.skip.addEventListener("click", () => advance(false));
+    nodes.again.addEventListener("click", () => {
+      if (!pack) return;
+      index = 0;
+      foundCount = 0;
+      render();
+    });
+  </script>
+</body>
+</html>
