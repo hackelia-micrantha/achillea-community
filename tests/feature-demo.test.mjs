@@ -13,7 +13,7 @@ const elementIds = [
   "step-hint", "found", "skip", "summary", "result", "again"
 ];
 
-function createHarness(body = sample, responseInit = {}) {
+function createHarness(body = sample, responseInit = {}, chunks = null) {
   const elements = Object.fromEntries(elementIds.map((id) => {
     const listeners = new Map();
     return [id, {
@@ -32,7 +32,15 @@ function createHarness(body = sample, responseInit = {}) {
   const requests = [];
   const fetch = async (url, init) => {
     requests.push({ url, init });
-    return new Response(body, responseInit);
+    const responseBody = chunks === null ? body : new ReadableStream({
+      start(controller) {
+        for (const chunk of chunks) {
+          controller.enqueue(new TextEncoder().encode(chunk));
+        }
+        controller.close();
+      }
+    });
+    return new Response(responseBody, responseInit);
   };
   const document = {
     getElementById: (id) => {
@@ -89,9 +97,18 @@ test("markup-like downloaded text remains inert, not injected as HTML", async ()
   assert.equal(elements["step-title"].textContent, "<img src=x onerror=alert(1)>");
 });
 
-test("over-limit streamed response is rejected without activation", async () => {
-  const { elements } = createHarness("x".repeat(13000));
+test("valid oversized JSON streamed in chunks is rejected by byte limit", async () => {
+  // Whitespace padding keeps the fixture syntactically valid. Without the
+  // streamed byte bound, JSON.parse would succeed and activate this feature.
+  const padding = " ".repeat(13000);
+  const oversized = sample + padding;
+  assert.doesNotThrow(() => JSON.parse(oversized));
+  assert.ok(Buffer.byteLength(oversized) > 12000);
+
+  const chunks = [sample, padding.slice(0, 5900), padding.slice(5900)];
+  const { elements, requests } = createHarness(oversized, {}, chunks);
   await elements.load.click();
+  assert.equal(requests.length, 1);
   assert.equal(elements.activity.hidden, true);
   assert.match(elements.status.textContent, /unavailable or invalid/);
 });
