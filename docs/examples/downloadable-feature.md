@@ -30,4 +30,12 @@ python3 -m http.server 8000 -d web
 # Then open http://localhost:8000/feature-demo.html
 ~~~
 
+For the isolated browser loader's regression tests, use Node.js 20+ from the repository root:
+
+~~~sh
+node --test tests/feature-demo.test.mjs
+~~~
+
+The tests use a synthetic DOM and in-memory HTTP responses; they check normal rendering, missing/invalid and oversized content, unsupported renderers, and markup-as-text. They are not a physical mobile test, a browser accessibility audit, or proof of production feature admission.
+
 This serves only static files. It does not require application credentials, an account, backend services, or a downloaded SDK. Keep public/private boundaries and licensing review independent of the example.
