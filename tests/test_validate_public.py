@@ -147,6 +147,30 @@ class PublicValidationTests(unittest.TestCase):
         self.assertIn("missing stateChange", result)
         self.assertIn("missing action", result)
 
+    def test_required_fixture_validated_behind_in_repository_directory_symlink(self) -> None:
+        # Recursive discovery sees the physical JSON, but not its path through
+        # the required conformance-directory symlink. It must not skip validation.
+        old = self.root / "docs/specifications/conformance"
+        (old / "application-cycle-v0.1.json").unlink()
+        old.rmdir()
+        real = self.root / "docs/synthetic-contracts"
+        real.mkdir(parents=True)
+        (real / "application-cycle-v0.1.json").write_text("{}", encoding="utf-8")
+        old.symlink_to(real, target_is_directory=True)
+        self.assertIn("schemaVersion must be", "\\n".join(validate_repository(self.root)))
+
+    def test_multiline_reference_definition_target_is_accepted(self) -> None:
+        self.write("README.md", "[spec][ref]\\n[ref]:\\n  docs/spec.md\\n")
+        self.assertEqual([], validate_documents(self.root))
+
+    def test_multiline_reference_definition_broken_target_is_rejected(self) -> None:
+        self.write("README.md", "[spec][ref]\\n[ref]:\\n  docs/absent.md\\n")
+        self.assertIn("missing link target", "\\n".join(validate_documents(self.root)))
+
+    def test_reference_definition_without_continuation_is_undefined(self) -> None:
+        self.write("README.md", "[spec][ref]\\n[ref]:\\n\\nNext paragraph.\\n")
+        self.assertIn("undefined reference label", "\\n".join(validate_documents(self.root)))
+
     def test_symlinked_json_cannot_escape_checkout(self) -> None:
         target = self.root / "docs/specifications/conformance/application-cycle-v0.1.json"
         target.unlink()
