@@ -16,6 +16,15 @@ A [language-neutral application state/effect contract](docs/specifications/appli
 
 Run `python3 -m unittest discover -s tests -p 'test_*.py' -v` and `python3 scripts/validate_public.py` in a clean public checkout. The same read-only, credential-free checks run on GitHub-hosted PR and `main` jobs. They validate local README/docs/site links, JSON syntax, draft scenario IDs and expected trace shapes; **they do not certify an SDK, runtime behavior, release, or deployed website**. See [public-validation issue #6](https://github.com/hackelia-micrantha/achillea-community/issues/6) for remaining source-to-Cloudflare deployment configuration and publication gates.
 
+## Architecture and public feature illustration
+
+- [Current architecture and proposed downloadable-feature diagrams](docs/architecture.md): distinguishes today's bundled Expo/React Native Pentalpha implementation from a **future** data-only feature-pack admission path.
+- [Shape Hunt public example](web/feature-demo.html) and [sample JSON](web/examples/shape-hunt.v1.json): a synthetic, standalone browser illustration. The page fetches JSON on demand and renders it using already-installed browser code; it is **not** an Achillea SDK, app extension, or signed/offline production loader.
+- [Example contract and trust boundaries](docs/examples/downloadable-feature.md): documents capability constraints, source separation, and missing production controls.
+- [Earlier Expo hackathon prototype](https://github.com/ryjen/cactus-hackathon): design reference for mobile prototyping, not evidence of shared source or a completed Achillea downloadable-feature implementation.
+
+Downloaded executable code, a production feature catalog, signature verification, offline pack installation, and host/runtime version negotiation **are not currently shipped**. The working game SDK, concrete game engine, and Asterwild source remain private pending review and release gates.
+
 ## Platform direction
 
 The proposed public surface is intentionally bounded:
