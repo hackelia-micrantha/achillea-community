@@ -59,7 +59,7 @@ sequenceDiagram
   Host->>Gate: Verify publisher, schema, compatibility and capabilities
   alt Admission denied
     Gate-->>Host: Reject without effects
-    Host-->>User: Unavailable; keep existing state
+    Host-->>User: Unavailable&#59; keep existing state
   else Admission allowed
     Gate-->>Host: Validated definition
     Host->>Render: Bind to known host renderer
