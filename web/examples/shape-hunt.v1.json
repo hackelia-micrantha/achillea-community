@@ -1,0 +1,25 @@
+{
+  "schema": "achillea.public-demo.feature/v1",
+  "id": "shape-hunt",
+  "version": "1.0.0",
+  "title": "Shape Hunt",
+  "description": "A short, account-free observation exercise. No camera, location, or player data is required.",
+  "renderer": "guided-checklist/v1",
+  "steps": [
+    {
+      "id": "circle",
+      "prompt": "Spot a circular shape.",
+      "hint": "It could be a pebble, a sign, or a pattern."
+    },
+    {
+      "id": "triangle",
+      "prompt": "Spot a triangle.",
+      "hint": "Look for three edges meeting at three corners."
+    },
+    {
+      "id": "spiral",
+      "prompt": "Spot a spiral or curved path.",
+      "hint": "A leaf, shell, drawing, or cloud may suggest one."
+    }
+  ]
+}
