@@ -1,2 +1,5 @@
+# Never publish deployment configuration or Wrangler-generated build files.
 wrangler.jsonc
 .assetsignore
+.wrangler/
+**/.wrangler/**
