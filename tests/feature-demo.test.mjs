@@ -30,14 +30,20 @@ function createHarness(body = sample, responseInit = {}, chunks = null) {
   }));
 
   const requests = [];
+  const streamStats = { cancelled: 0 };
   const fetch = async (url, init) => {
     requests.push({ url, init });
+    let nextChunk = 0;
     const responseBody = chunks === null ? body : new ReadableStream({
-      start(controller) {
-        for (const chunk of chunks) {
-          controller.enqueue(new TextEncoder().encode(chunk));
+      pull(controller) {
+        if (nextChunk >= chunks.length) {
+          controller.close();
+          return;
         }
-        controller.close();
+        controller.enqueue(new TextEncoder().encode(chunks[nextChunk++]));
+      },
+      cancel() {
+        streamStats.cancelled += 1;
       }
     });
     return new Response(responseBody, responseInit);
@@ -50,7 +56,7 @@ function createHarness(body = sample, responseInit = {}, chunks = null) {
   };
 
   vm.runInNewContext(script, { document, fetch, TextDecoder }, { timeout: 2000 });
-  return { elements, requests };
+  return { elements, requests, streamStats };
 }
 
 test("valid same-origin JSON renders after the user requests it", async () => {
@@ -113,16 +119,31 @@ test("valid oversized JSON streamed in chunks is rejected by byte limit", async 
   assert.match(elements.status.textContent, /unavailable or invalid/);
 });
 
-test("oversized declared response and missing body fail closed", async () => {
-  for (const init of [
+test("oversized Content-Length rejects and cancels its unread response", async () => {
+  const { elements, streamStats } = createHarness(
+    sample,
     { headers: { "content-length": "13000" } },
-    { status: 204 }
-  ]) {
-    const { elements } = createHarness(sample, init);
-    await elements.load.click();
-    assert.equal(elements.activity.hidden, true);
-    assert.match(elements.status.textContent, /unavailable or invalid/);
-  }
+    [sample, " ".repeat(130000)]
+  );
+  await elements.load.click();
+  assert.equal(elements.activity.hidden, true);
+  assert.equal(streamStats.cancelled, 1);
+  assert.match(elements.status.textContent, /unavailable or invalid/);
+});
+
+test("HTTP errors cancel unread response bodies before rejecting", async () => {
+  const { elements, streamStats } = createHarness(sample, { status: 404 }, [sample, " ".repeat(130000)]);
+  await elements.load.click();
+  assert.equal(elements.activity.hidden, true);
+  assert.equal(streamStats.cancelled, 1);
+  assert.match(elements.status.textContent, /unavailable or invalid/);
+});
+
+test("missing response body fails closed", async () => {
+  const { elements } = createHarness(sample, { status: 204 });
+  await elements.load.click();
+  assert.equal(elements.activity.hidden, true);
+  assert.match(elements.status.textContent, /unavailable or invalid/);
 });
 
 test("invalid JSON and a failed HTTP response do not activate a feature", async () => {
