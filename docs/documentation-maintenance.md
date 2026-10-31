@@ -20,15 +20,16 @@ Review the [README](../README.md), [site source](../web/index.html), [boundary](
 
 ## Validation at the exact candidate revision
 
-The public repository currently has no accepted repository-owned automated CI command. Existing [public-validation issue #6](https://github.com/hackelia-micrantha/achillea-community/issues/6) owns an unprivileged GitHub-hosted PR/main gate for JSON syntax and structure, local links, draft trace shape and site/source validation. Until that gate lands, label validation **manual/source-only**:
+The repository now runs unprivileged, credential-free public validation on pull requests and `main` ([community #6](https://github.com/hackelia-micrantha/achillea-community/issues/6), delivered 2026-10-28). From a clean public checkout, run:
 
 ```sh
-python3 -m json.tool docs/specifications/conformance/application-cycle-v0.1.json > /dev/null
-# Inspect changed Markdown relative paths and web/index.html links against
-# the exact candidate tree; separately preview web/index.html if a site claim changes.
+python3 -m unittest discover -s tests -p 'test_*.py' -v
+python3 scripts/validate_public.py
 ```
 
-The JSON command checks **syntax only**, not scenario uniqueness, trace semantics, conformance, actual site availability or deployment. Do not claim successful executable CI, rendered-page verification or live DNS/HTTP evidence without running the corresponding accepted checks. Future CI must use unprivileged hosted runners and no private checkout, credentials or deployment grants; a source-only PR must not silently publish the site.
+The checks cover public documentation/site links, JSON syntax and fixture structure, duplicate scenario IDs and malformed expected traces, and the standalone data-only example's source contract. They **do not** prove actual SDK/game runtime conformance, an Asterwild app release, a signed feature-pack admission system, or a production installation.
+
+The public Cloudflare site and example have separate build/live HTTP evidence recorded in community #6. Site-source tests alone cannot substitute for deployment and HTTP evidence after a site change. Keep source-only PR checks read-only and unprivileged; never provide fork code with private runner access, private source, or credentials. Publication or public-license claims require their own explicit gate.
 
 ## Maintenance triggers and decisions
 
