@@ -200,10 +200,36 @@
         </ul>
       </div>
 
-      <div class="section">
-        <h2>First product</h2>
+      <div class="section" id="asterwild-product">
+        <h2>First product — Asterwild</h2>
         <p>
-          <strong>Asterwild</strong> is a planned collection of games to play outdoors, built using Achillea. Its game catalogue draws on <cite>Games to Play in Nature</cite> by Jen Ball as a source of inspiration. Pentalpha is the first implemented reference game; other games are candidates. The initial local, account-free experience remains in development, and no public app or SDK release is available here.
+          <strong>Asterwild</strong> is a local-first Expo/React Native application in
+          development for guided outdoor games, built on Achillea's reusable game
+          contracts. <strong>Pentalpha</strong> is its first implemented reference,
+          covering discovery, setup, tutorial, validated play, results and replay.
+        </p>
+        <p>
+          <strong>Engineering:</strong> deterministic game rules are separated from
+          product-owned presentation and navigation. Versioned local sessions are
+          validated and checked by deterministic replay before restoration.
+          iOS, Android and web are targets still undergoing release qualification,
+          including physical-device recovery and accessibility checks.
+        </p>
+        <p>
+          <strong>Game design backlog:</strong> 13 catalogued candidates across
+          solo, two-player and group outdoor play. Only Pentalpha is implemented;
+          the other games are drafts or indexed concepts, not committed releases.
+        </p>
+        <ul>
+          <li><strong>Solo:</strong> Pentalpha (implemented reference), Leaf Puzzle, Solo Trail Memory</li>
+          <li><strong>Two-player:</strong> Vultures and Crows, Foxes and Hens, Nine Men's Morris, Mancala, Senet, Hnefatafl, Stone Circle</li>
+          <li><strong>Group:</strong> Forest Scavenge, Shut the Box, Team Echo Path</li>
+        </ul>
+        <p>
+          The Asterwild app and SDK source remain private. No public app or supported
+          SDK release is available. The
+          <a href="https://github.com/hackelia-micrantha/achillea-community/blob/main/docs/architecture.md">public architecture overview</a>
+          describes the current boundaries and proposed future features.
         </p>
       </div>
 
