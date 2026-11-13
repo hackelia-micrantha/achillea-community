@@ -1,6 +1,6 @@
 # Achillea community
 
-**Achillea** is a platform under development for guided outdoor play, reusable game definitions, and portable application architecture. **Asterwild** is the first product built using Achillea.
+**Achillea** is a platform under development for guided outdoor play, reusable game definitions, and portable application architecture. **Asterwild** is its first product in development: a planned collection of games to play outdoors, drawing on *Games to Play in Nature* by Jen Ball as a source of candidate games. Pentalpha is the first implemented reference game; the wider collection remains in development.
 
 ## What is available here
 
@@ -11,6 +11,19 @@ The first private product milestone is a local, account-free Pentalpha experienc
 ## Architecture specification (draft)
 
 A [language-neutral application state/effect contract](docs/specifications/application-state-effects-v0.1.md) and [synthetic conformance traces](docs/specifications/conformance/application-cycle-v0.1.json) are available for review. They deliberately distinguish current behavior from **unresolved** dispatch, lifecycle and failure semantics. No implementation has been certified against these fixtures and no public runtime or SDK has been released.
+
+## Public contract validation
+
+Run `python3 -m unittest discover -s tests -p 'test_*.py' -v` and `python3 scripts/validate_public.py` in a clean public checkout. The same read-only, credential-free checks run on GitHub-hosted PR and `main` jobs. They validate local README/docs/site links, JSON syntax, draft scenario IDs and expected trace shapes; **they do not certify an SDK, runtime behavior, release, or deployed website**. See [public-validation issue #6](https://github.com/hackelia-micrantha/achillea-community/issues/6) for remaining source-to-Cloudflare deployment configuration and publication gates.
+
+## Architecture and public feature illustration
+
+- [Current architecture and proposed downloadable-feature diagrams](docs/architecture.md): distinguishes today's bundled Expo/React Native Pentalpha implementation from a **future** data-only feature-pack admission path.
+- [Shape Hunt public example](web/feature-demo.html) and [sample JSON](web/examples/shape-hunt.v1.json): a synthetic, standalone browser illustration. The page fetches JSON on demand and renders it using already-installed browser code; it is **not** an Achillea SDK, app extension, or signed/offline production loader.
+- [Example contract and trust boundaries](docs/examples/downloadable-feature.md): documents capability constraints, source separation, and missing production controls.
+- [Earlier Expo hackathon prototype](https://github.com/ryjen/cactus-hackathon): design reference for mobile prototyping, not evidence of shared source or a completed Achillea downloadable-feature implementation.
+
+Downloaded executable code, a production feature catalog, signature verification, offline pack installation, and host/runtime version negotiation **are not currently shipped**. The working game SDK, concrete game engine, and Asterwild source remain private pending review and release gates.
 
 ## Platform direction
 
@@ -27,7 +40,7 @@ See [the proposed repository boundary](docs/public-private-boundary.md) for the 
 
 ## Documentation maintenance
 
-This public documentation and site surface adopts the [shared Micrantha documentation-sync process](docs/documentation-maintenance.md). Its project-owned contract records the public/private authority split, unreleased SDK and draft-specification claim limits, current manual validation, and the separate hosted public-validation work.
+The public documentation and static site follow the [shared Micrantha documentation-sync process](docs/documentation-maintenance.md), with project-specific claim, release, and private/public source boundaries. Public source validation is separate from Cloudflare deployment and live-site verification.
 
 ## Contributing and use
 
