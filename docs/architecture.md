@@ -2,11 +2,13 @@
 
 **Status:** public architecture review and design illustration, October 2026. This is **not** a published SDK, certified conformance suite, deployed feature downloader, or production release. This describes the private application's boundaries at a high level; it does not expose implementation code.
 
+**Product context:** Asterwild is being developed as a collection of games that can be played outdoors. Its game backlog draws on *Games to Play in Nature* by Jen Ball, with Pentalpha as the first implemented reference game. Other documented games remain candidates, not completed releases. The book is a research source, not a claim of publisher affiliation or permission to redistribute its text.
+
 ## What exists today
 
 Asterwild is the Expo/React Native host. Its first local Pentalpha experience uses **bundled** packages: portable game definitions and deterministic rules depend on Achillea SDK contracts, while the host controls presentation, navigation, lifecycle, local storage, and native integration. Versioned local-session admission verifies saved records before reuse. Product release and physical-device acceptance remain in qualification.
 
-~~~mermaid
+```mermaid
 flowchart TD
   Host["Asterwild - Expo / React Native host"]
   SDK["Achillea SDK - contracts and runtime"]
@@ -21,7 +23,7 @@ flowchart TD
   Host --> Surfaces
   Host --> Storage
   Host --> Native
-~~~
+```
 
 **Boundary:** the SDK must not import Asterwild or a concrete game; a portable game package depends inward on the SDK, not on React Native screens. The application interprets semantic game surfaces and owns privileged effects. The first release requires no hosted account, downloaded runtime packages, or network game authority.
 
@@ -29,7 +31,7 @@ flowchart TD
 
 Dynamic content is a **proposed extension after the local v0.1 slice**, not a verified Achillea runtime feature today. The important separation is between **downloading inert, declarative content** and **installing executable code**.
 
-~~~mermaid
+```mermaid
 flowchart LR
   Publish["Reviewed feature definition and release metadata"] --> Catalog["Proposed versioned content catalog"]
   Catalog --> Fetch["Host-owned download client"]
@@ -39,13 +41,13 @@ flowchart LR
   Cache --> Resolve["Host capability / renderer registry"]
   Resolve --> Screen["Bundled views and trusted rules"]
   Screen --> Save["Host-owned session and recovery"]
-~~~
+```
 
 For a future production downloader, the **host** would enforce an explicit origin/catalog policy, bounded download and parsing limits, schema and version checks, authenticated signing/integrity rooted in a separately trusted key/catalog, capability allowlists, dependency compatibility, safe offline caching, rollback, and reviewed lifecycle/failure semantics. A digest supplied by the same untrusted source **alone** would not prove authenticity. Versioned content may propose supported semantic surfaces but may not grant network, location, billing, file-system, background execution, or other privileges.
 
 **Do not fetch and run JavaScript/TSX, arbitrary React components, game-rule functions, native modules, or dynamic eval as a feature pack.** If a feature needs new executable rules or host capabilities, ship a reviewed application/runtime update (or later design a separately reviewed, constrained interpreter) first. Downloaded definitions select only already-installed, explicitly allowed renderers and logic.
 
-~~~mermaid
+```mermaid
 sequenceDiagram
   participant User
   participant Host as Host application
@@ -59,13 +61,13 @@ sequenceDiagram
   Host->>Gate: Verify publisher, schema, compatibility and capabilities
   alt Admission denied
     Gate-->>Host: Reject without effects
-    Host-->>User: Unavailable&#59; keep existing state
+    Host-->>User: Feature unavailable and existing state retained
   else Admission allowed
     Gate-->>Host: Validated definition
     Host->>Render: Bind to known host renderer
     Render-->>User: Guided steps and controls
   end
-~~~
+```
 
 ## Public example: Shape Hunt
 

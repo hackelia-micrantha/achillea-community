@@ -1,6 +1,6 @@
 # Achillea community
 
-**Achillea** is a platform under development for guided outdoor play, reusable game definitions, and portable application architecture. **Asterwild** is the first product built using Achillea.
+**Achillea** is a platform under development for guided outdoor play, reusable game definitions, and portable application architecture. **Asterwild** is its first product in development: a planned collection of games to play outdoors, drawing on *Games to Play in Nature* by Jen Ball as a source of candidate games. Pentalpha is the first implemented reference game; the wider collection remains in development.
 
 ## What is available here
 
