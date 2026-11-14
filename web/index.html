@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Achillea — Outdoor game catalogue</title>
+  <title>Achillea — Downloadable content and feature applications</title>
   <style>
     :root {
       --bg: #f6f8f7;
@@ -181,7 +181,7 @@
         </svg>
         <div>
           <h1>Achillea</h1>
-          <p class="muted" style="margin: 0.2rem 0 0;">Outdoor game catalogue and downloadable content — in development</p>
+          <p class="muted" style="margin: 0.2rem 0 0;">Downloadable content and feature-based applications — in development</p>
         </div>
       </div>
 
@@ -198,14 +198,47 @@
         </svg>
 
         <p class="lead">
-          Discover outdoor games, download the ones you want, and play offline. Achillea is being built around a growing game catalogue and downloadable content for Asterwild. Game downloads are a planned capability, not yet available.
+          Achillea is a framework under development for building applications with downloadable content and modular features. Asterwild is the first intended application: a catalogue of outdoor games offered as downloadable features. The game-download experience is planned, not yet shipping.
+        </p>
+      </div>
+
+      <div class="section" id="achillea-framework">
+        <h2>Achillea framework</h2>
+        <p>
+          Achillea is intended to give applications a reusable way to describe,
+          discover, acquire and use content-backed features. Applications choose
+          their own feature types and user experiences; games are one use case,
+          not the framework's defining domain.
+        </p>
+        <p>
+          Planned capabilities include feature catalogues, compatible content
+          downloads, offline availability and lifecycle management. The current
+          private development code provides reusable contracts and a bundled
+          Pentalpha reference, but not a released, general-purpose feature
+          downloader or publicly supported SDK.
+        </p>
+      </div>
+
+      <div class="section" id="asterwild-product">
+        <h2>Asterwild — outdoor games application</h2>
+        <p>
+          <strong>Asterwild</strong> is the Expo/React Native application being built
+          to present a catalogue of outdoor games as downloadable features.
+          The download/install flow is planned; its first implemented Pentalpha flow
+          covers discovery, setup, tutorial, play, results and replay, with local
+          session recovery.
+        </p>
+        <p>
+          The application, its game engine and SDK are still private and unreleased.
+          iOS, Android and web are development targets undergoing release
+          qualification; there is no public app installation or supported SDK yet.
         </p>
       </div>
 
       <div class="section" id="game-catalogue">
-        <h2>Explore the game catalogue</h2>
+        <h2>Asterwild game catalogue</h2>
         <p>
-          The current backlog contains <strong>13 game candidates</strong> for solo,
+          Asterwild's current backlog contains <strong>13 game candidates</strong> for solo,
           two-player and group play. <strong>Pentalpha</strong> is implemented as a
           pre-release reference game; the other 12 are drafts or indexed concepts.
           None of these games is available for public download yet.
@@ -247,10 +280,11 @@
       </div>
 
       <div class="section" id="downloadable-games">
-        <h2>Download games — planned</h2>
+        <h2>Asterwild game downloads — planned</h2>
         <p>
-          The intended experience is straightforward: browse the catalogue, choose
-          a supported game, download its content, and keep it available offline.
+          Asterwild's intended experience is to browse its game catalogue, choose
+          a supported game feature, download its content, and play offline.
+          Achillea would provide the underlying reusable feature/content mechanism.
           <strong>In-app game downloads, installation, updates and removal are not
           shipping features today.</strong>
         </p>
@@ -264,21 +298,6 @@
           not downloaded. Future content packs would select trusted, already-installed
           gameplay capabilities; games requiring new executable rules would still
           require an application update.
-        </p>
-      </div>
-
-      <div class="section" id="asterwild-product">
-        <h2>First application — Asterwild</h2>
-        <p>
-          <strong>Asterwild</strong> is the Expo/React Native application being built
-          to deliver Achillea's outdoor games. Its first implemented Pentalpha flow
-          covers discovery, setup, tutorial, play, results and replay, with local
-          session recovery.
-        </p>
-        <p>
-          The application, its game engine and SDK are still private and unreleased.
-          iOS, Android and web are development targets undergoing release
-          qualification; there is no public app installation or supported SDK yet.
         </p>
       </div>
 
@@ -300,7 +319,7 @@
       <div class="section">
         <h2>Direction</h2>
         <p>
-          Build one product. Extract what holds. Keep the platform small. The public repository currently hosts project documentation and this site, not the SDK. <a href="https://github.com/hackelia-micrantha/achillea-community">View the public repository</a> and <a href="https://github.com/hackelia-micrantha/achillea-community/blob/main/docs/public-private-boundary.md">the proposed publication boundary</a>.
+          Build a reusable, application-neutral content and feature framework; validate it through Asterwild without making outdoor games a framework requirement. The public repository currently hosts project documentation and this site, not the SDK. <a href="https://github.com/hackelia-micrantha/achillea-community">View the public repository</a> and <a href="https://github.com/hackelia-micrantha/achillea-community/blob/main/docs/public-private-boundary.md">the proposed publication boundary</a>.
         </p>
       </div>
     </div>

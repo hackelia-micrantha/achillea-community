@@ -1,6 +1,6 @@
 # Achillea community
 
-**Achillea** is being developed around a catalogue of outdoor games and a future download-to-play-offline experience. **Asterwild** is its first application. The backlog includes 13 named games, with Pentalpha as the only implemented reference in the private pre-release app. Game downloads and a public app release are **not available yet**. *Games to Play in Nature* by Jen Ball is one research source for the candidate list, not a source of redistributable content.
+**Achillea** is a general-purpose framework under development for downloadable content and feature-based applications. It is **not an outdoor-game framework**. **Asterwild** is the intended first application, presenting a catalogue of outdoor games as features that users would discover, download and play offline. Of its 13 game candidates, only Pentalpha is currently implemented as a bundled, private pre-release reference; a public app and production feature downloading are **not available yet**. *Games to Play in Nature* by Jen Ball is one research source for Asterwild's candidate list, not a source of redistributable content.
 
 ## What is available here
 
@@ -8,10 +8,14 @@ This **public** repository currently contains a project description, a static we
 
 The first private product milestone is a local, account-free Pentalpha experience. Hosted multiplayer, accounts, location features and AI-driven adaptation are future possibilities, not shipping capabilities of this public repository.
 
-## Game catalogue and downloadable content
+## Framework scope and Asterwild application
 
-- [Browse the 13-game catalogue](web/index.html#game-catalogue): three solo, seven two-player and three group games. Only Pentalpha is implemented (pre-release); the other 12 entries are drafts or indexed concepts.
-- [Read the planned download-and-offline flow](web/index.html#downloadable-games): select a supported game, acquire its compatible content and play without a network connection. This workflow is **not currently implemented** in Asterwild.
+Achillea's intended reusable concerns are feature discovery/catalogues, content acquisition, compatibility validation and offline feature lifecycle. Applications supply their own feature definitions, presentation and domain logic. The existing private implementation is game-first; these generic download/installation capabilities are not yet certified or publicly released.
+
+## Asterwild game catalogue and planned downloads
+
+- [Browse Asterwild's 13-game catalogue](web/index.html#game-catalogue): three solo, seven two-player and three group games. Only Pentalpha is implemented (pre-release); the other 12 entries are drafts or indexed concepts.
+- [Read Asterwild's planned download-and-offline flow](web/index.html#downloadable-games): select a supported game, acquire its compatible content and play without a network connection. This workflow is **not currently implemented** in Asterwild.
 - [See the standalone Shape Hunt browser illustration](web/feature-demo.html): a public data-only example, **not** an Asterwild game download or installable game pack.
 
 The working Pentalpha game remains bundled with the private application. Downloaded content must not become a route for unreviewed executable rules, privileges or third-party assets. The list is a development backlog, **not** a public download catalogue or release commitment.

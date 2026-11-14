@@ -1,10 +1,12 @@
-# Achillea architecture: bundled v0.1 and proposed downloadable features
+# Achillea architecture: feature-based applications and downloadable content
 
 **Status:** public architecture review and design illustration, October 2026. This is **not** a published SDK, certified conformance suite, deployed feature downloader, or production release. This describes the private application's boundaries at a high level; it does not expose implementation code.
 
-**Product context:** Asterwild is being developed as a collection of games that can be played outdoors. Its game backlog draws on *Games to Play in Nature* by Jen Ball, with Pentalpha as the first implemented reference game. Other documented games remain candidates, not completed releases. The book is a research source, not a claim of publisher affiliation or permission to redistribute its text.
+**Framework scope:** Achillea is intended as a reusable, application-neutral framework for feature-based applications and downloadable content. Feature catalogues, compatibility admission, acquisition and offline lifecycle are framework concerns; any particular application's content types and domain behavior are its own. The current implementation started from game-specific contracts and a bundled reference, not a finished generic downloader.
 
-## What exists today
+**Product context:** Asterwild is the first intended application, presenting a collection of outdoor games as downloadable features. Its game backlog draws on *Games to Play in Nature* by Jen Ball, with Pentalpha as the first implemented reference game. Other documented games remain candidates, not completed releases. The book is a research source, not a claim of publisher affiliation or permission to redistribute its text.
+
+## Current implementation — Asterwild's bundled reference
 
 Asterwild is the Expo/React Native host. Its first local Pentalpha experience uses **bundled** packages: portable game definitions and deterministic rules depend on Achillea SDK contracts, while the host controls presentation, navigation, lifecycle, local storage, and native integration. Versioned local-session admission verifies saved records before reuse. Product release and physical-device acceptance remain in qualification.
 
@@ -27,7 +29,7 @@ flowchart TD
 
 **Boundary:** the SDK must not import Asterwild or a concrete game; a portable game package depends inward on the SDK, not on React Native screens. The application interprets semantic game surfaces and owns privileged effects. The first release requires no hosted account, downloaded runtime packages, or network game authority.
 
-## Future direction: feature packs acquired on demand
+## Future Achillea capability: feature packs acquired on demand
 
 Dynamic content is a **proposed extension after the local v0.1 slice**, not a verified Achillea runtime feature today. The important separation is between **downloading inert, declarative content** and **installing executable code**.
 
