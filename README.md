@@ -1,12 +1,20 @@
 # Achillea community
 
-**Achillea** is a platform under development for guided outdoor play, reusable game definitions, and portable application architecture. **Asterwild** is its first product in development: a planned collection of games to play outdoors, drawing on *Games to Play in Nature* by Jen Ball as a source of candidate games. Pentalpha is the first implemented reference game; the wider collection remains in development.
+**Achillea** is being developed around a catalogue of outdoor games and a future download-to-play-offline experience. **Asterwild** is its first application. The backlog includes 13 named games, with Pentalpha as the only implemented reference in the private pre-release app. Game downloads and a public app release are **not available yet**. *Games to Play in Nature* by Jen Ball is one research source for the candidate list, not a source of redistributable content.
 
 ## What is available here
 
 This **public** repository currently contains a project description, a static web page in [`web/`](web/), a draft architecture specification, and a proposed [public/private ownership and publication boundary](docs/public-private-boundary.md). The working Achillea SDK, Pentalpha game engine, and Asterwild application currently live together in a separate **private** development repository; they are **not published SDKs or supported public packages**.
 
 The first private product milestone is a local, account-free Pentalpha experience. Hosted multiplayer, accounts, location features and AI-driven adaptation are future possibilities, not shipping capabilities of this public repository.
+
+## Game catalogue and downloadable content
+
+- [Browse the 13-game catalogue](web/index.html#game-catalogue): three solo, seven two-player and three group games. Only Pentalpha is implemented (pre-release); the other 12 entries are drafts or indexed concepts.
+- [Read the planned download-and-offline flow](web/index.html#downloadable-games): select a supported game, acquire its compatible content and play without a network connection. This workflow is **not currently implemented** in Asterwild.
+- [See the standalone Shape Hunt browser illustration](web/feature-demo.html): a public data-only example, **not** an Asterwild game download or installable game pack.
+
+The working Pentalpha game remains bundled with the private application. Downloaded content must not become a route for unreviewed executable rules, privileges or third-party assets. The list is a development backlog, **not** a public download catalogue or release commitment.
 
 ## Architecture specification (draft)
 
