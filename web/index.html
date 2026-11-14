@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Achillea</title>
+  <title>Achillea — Outdoor game catalogue</title>
   <style>
     :root {
       --bg: #f6f8f7;
@@ -114,6 +114,18 @@
       padding-top: 1.35rem;
     }
 
+    .catalogue-groups {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 1rem;
+      margin-top: 0.85rem;
+    }
+
+    .catalogue-groups h3 {
+      margin: 0 0 0.55rem;
+      font-size: 1rem;
+    }
+
     ul {
       margin: 0.2rem 0 0;
       padding-left: 1.2rem;
@@ -169,7 +181,7 @@
         </svg>
         <div>
           <h1>Achillea</h1>
-          <p class="muted" style="margin: 0.2rem 0 0;">Platform under development</p>
+          <p class="muted" style="margin: 0.2rem 0 0;">Outdoor game catalogue and downloadable content — in development</p>
         </div>
       </div>
 
@@ -186,59 +198,96 @@
         </svg>
 
         <p class="lead">
-          Achillea is a platform under development for guided outdoor play. Its reusable game and application contracts are being validated through a local-first product.
+          Discover outdoor games, download the ones you want, and play offline. Achillea is being built around a growing game catalogue and downloadable content for Asterwild. Game downloads are a planned capability, not yet available.
         </p>
       </div>
 
-      <div class="section">
-        <h2>Design direction</h2>
+      <div class="section" id="game-catalogue">
+        <h2>Explore the game catalogue</h2>
+        <p>
+          The current backlog contains <strong>13 game candidates</strong> for solo,
+          two-player and group play. <strong>Pentalpha</strong> is implemented as a
+          pre-release reference game; the other 12 are drafts or indexed concepts.
+          None of these games is available for public download yet.
+        </p>
+        <div class="catalogue-groups">
+          <div>
+            <h3>Solo · 3</h3>
+            <ul>
+              <li><strong>Pentalpha</strong> — implemented reference, pre-release</li>
+              <li>Leaf Puzzle — draft</li>
+              <li>Solo Trail Memory — draft</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Two-player · 7</h3>
+            <ul>
+              <li>Vultures and Crows — draft</li>
+              <li>Foxes and Hens — draft</li>
+              <li>Nine Men's Morris — draft</li>
+              <li>Mancala — draft</li>
+              <li>Senet — draft</li>
+              <li>Hnefatafl — draft</li>
+              <li>Stone Circle — draft</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Group · 3</h3>
+            <ul>
+              <li>Forest Scavenge — draft</li>
+              <li>Shut the Box — draft</li>
+              <li>Team Echo Path — draft</li>
+            </ul>
+          </div>
+        </div>
+        <p class="muted">
+          These titles are a development backlog, not a committed release schedule.
+          Source-book text, artwork and game assets are not distributed here.
+        </p>
+      </div>
+
+      <div class="section" id="downloadable-games">
+        <h2>Download games — planned</h2>
+        <p>
+          The intended experience is straightforward: browse the catalogue, choose
+          a supported game, download its content, and keep it available offline.
+          <strong>In-app game downloads, installation, updates and removal are not
+          shipping features today.</strong>
+        </p>
         <ul>
-          <li><strong>Dynamic features</strong> — tutorials and flows defined as data, adaptable at runtime.</li>
-          <li><strong>Reusable primitives</strong> — turns, sessions, prompts, progression modeled once.</li>
-          <li><strong>Future multiplayer</strong> — turn-based coordination without heavy infrastructure is planned, not part of the first local release.</li>
-          <li><strong>Low operational cost</strong> — designed for small-team ownership.</li>
+          <li><strong>Browse:</strong> compare game objectives, player counts and setup needs.</li>
+          <li><strong>Download:</strong> acquire a compatible, reviewed content definition for a supported game.</li>
+          <li><strong>Play offline:</strong> launch installed content without relying on a network connection.</li>
         </ul>
+        <p>
+          The current Pentalpha reference is bundled with the private application,
+          not downloaded. Future content packs would select trusted, already-installed
+          gameplay capabilities; games requiring new executable rules would still
+          require an application update.
+        </p>
       </div>
 
       <div class="section" id="asterwild-product">
-        <h2>First product — Asterwild</h2>
+        <h2>First application — Asterwild</h2>
         <p>
-          <strong>Asterwild</strong> is a local-first Expo/React Native application in
-          development for guided outdoor games, built on Achillea's reusable game
-          contracts. <strong>Pentalpha</strong> is its first implemented reference,
-          covering discovery, setup, tutorial, validated play, results and replay.
+          <strong>Asterwild</strong> is the Expo/React Native application being built
+          to deliver Achillea's outdoor games. Its first implemented Pentalpha flow
+          covers discovery, setup, tutorial, play, results and replay, with local
+          session recovery.
         </p>
         <p>
-          <strong>Engineering:</strong> deterministic game rules are separated from
-          product-owned presentation and navigation. Versioned local sessions are
-          validated and checked by deterministic replay before restoration.
-          iOS, Android and web are targets still undergoing release qualification,
-          including physical-device recovery and accessibility checks.
-        </p>
-        <p>
-          <strong>Game design backlog:</strong> 13 catalogued candidates across
-          solo, two-player and group outdoor play. Only Pentalpha is implemented;
-          the other games are drafts or indexed concepts, not committed releases.
-        </p>
-        <ul>
-          <li><strong>Solo:</strong> Pentalpha (implemented reference), Leaf Puzzle, Solo Trail Memory</li>
-          <li><strong>Two-player:</strong> Vultures and Crows, Foxes and Hens, Nine Men's Morris, Mancala, Senet, Hnefatafl, Stone Circle</li>
-          <li><strong>Group:</strong> Forest Scavenge, Shut the Box, Team Echo Path</li>
-        </ul>
-        <p>
-          The Asterwild app and SDK source remain private. No public app or supported
-          SDK release is available. The
-          <a href="https://github.com/hackelia-micrantha/achillea-community/blob/main/docs/architecture.md">public architecture overview</a>
-          describes the current boundaries and proposed future features.
+          The application, its game engine and SDK are still private and unreleased.
+          iOS, Android and web are development targets undergoing release
+          qualification; there is no public app installation or supported SDK yet.
         </p>
       </div>
 
       <div class="section">
-        <h2>Architecture and example</h2>
+        <h2>How downloadable content could work</h2>
         <p>
-          The current Asterwild prototype bundles its game code. Achillea is also exploring
-          optional, downloadable data-only features as a future extension; no production
-          content installer or published SDK is available.
+          The public Shape Hunt example explores fetching a bounded, data-only activity
+          for a renderer already included in the page. It is a technical illustration,
+          not a catalogue download or proof of in-app game installation.
         </p>
         <p>
           <a href="./feature-demo.html">Try the standalone Shape Hunt feature illustration</a>,
