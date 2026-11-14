@@ -14,7 +14,7 @@ A [language-neutral application state/effect contract](docs/specifications/appli
 
 ## Public contract validation
 
-Run `python3 -m unittest discover -s tests -p 'test_*.py' -v` and `python3 scripts/validate_public.py` in a clean public checkout. The same read-only, credential-free checks run on GitHub-hosted PR and `main` jobs. They validate local README/docs/site links, JSON syntax, draft scenario IDs and expected trace shapes; **they do not certify an SDK, runtime behavior, release, or deployed website**. See [public-validation issue #6](https://github.com/hackelia-micrantha/achillea-community/issues/6) for remaining source-to-Cloudflare deployment configuration and publication gates.
+Run `python3 -m unittest discover -s tests -p 'test_*.py' -v` and `python3 scripts/validate_public.py` in a clean public checkout. The same read-only, credential-free checks run on GitHub-hosted PR and `main` jobs. They validate local README/docs/site links, JSON syntax, draft scenario IDs and expected trace shapes; **they do not certify an SDK, runtime behavior, release, or deployed website**. See [completed public-validation issue #6](https://github.com/hackelia-micrantha/achillea-community/issues/6) for the original credential-free CI, Cloudflare deployment, and live HTTP evidence. Subsequent site changes require their own deployment and HTTP verification before claiming a live release.
 
 ## Architecture and public feature illustration
 
