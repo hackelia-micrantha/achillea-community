@@ -15,6 +15,26 @@
 
 The browser demonstrates *on-demand data-driven feature presentation*, not safe offline production installation or the private Achillea SDK. There is no cryptographic signature, trusted catalog, persisted offline cache, entitlement, native integration, host-version negotiation, or production-grade resource isolation.
 
+## Worked feature path (public implementation)
+
+The implementation is the [standalone browser page](../../web/feature-demo.html), its [same-origin fixture](../../web/examples/shape-hunt.v1.json), and [isolated tests](../../tests/feature-demo.test.mjs). This flow does **not** run in the private Asterwild app.
+
+1. **User intent:** Until the visitor presses **Download sample feature**, the page makes no sample request. The click handler fetches the fixed relative URL `./examples/shape-hunt.v1.json` with `credentials: "omit"` and `cache: "no-store"`.
+2. **Bounded admission:** The page rejects failed HTTP responses, an announced response longer than 12,000 bytes, missing streaming response bodies, and payloads that exceed 12,000 bytes while being read. Rejected or completed streams are cancelled/released where the implementation permits.
+3. **Closed contract:** `validate()` requires the exact pack keys (`schema`, `id`, `version`, `title`, `description`, `renderer`, `steps`), the expected `shape-hunt` identity, schema `achillea.public-demo.feature/v1`, version `1.0.0`, and the already-installed `guided-checklist/v1` renderer. It expects exactly three steps, exact step keys (`id`, `prompt`, `hint`), unique lowercase-hyphenated step identifiers, and nonempty strings of at most 180 JavaScript string units for bounded text fields.
+4. **Trusted rendering:** The page's own JavaScript maps the validated prompts and hints into `textContent`. Markup-like strings remain inert text; the definition cannot introduce executable HTML, event handlers, active navigation URLs, callbacks, or executable rules. Unknown fields or renderer IDs are rejected.
+5. **Local outcome:** **Found it** and **Skip** advance an in-memory index and count; the page displays a result and can restart locally. Rejected content hides the activity. Refreshing the page discards progress; the example never writes it to storage or sends answers to a server.
+
+**Boundary:** downloaded **data** → bounded/schema-checked admission → **preinstalled** browser renderer → local interaction. This does not establish source authenticity, signed publisher identity, durable offline installation, device permissions, or a general-purpose Achillea feature host. The size/schema checks reduce inputs accepted by this *specific illustration*, not all possible resource or application risks.
+
+### Reproducible evidence and known limits
+
+The public [test suite](../../tests/feature-demo.test.mjs) exercises click-triggered loading, valid progression and replay, unknown schemas/renderers/fields, duplicate step IDs, markup rendered as inert text, oversized streamed responses, early rejection of oversized `Content-Length`, HTTP failures, absent bodies, and malformed JSON. These are synthetic DOM/response tests; they do **not** verify physical mobile devices, browser accessibility, private SDK conformance, trusted remote publishers, or live Cloudflare deployment.
+
+### Earlier Expo application as a design precedent
+
+The separate public [Eyespie / cactus-hackathon repository](https://github.com/ryjen/cactus-hackathon) describes a React Native/Expo camera and clue-generation application. Its public feature folders cover [camera](https://github.com/ryjen/cactus-hackathon/tree/main/src/features/camera), [game creation](https://github.com/ryjen/cactus-hackathon/tree/main/src/features/game-creation), [clue creation](https://github.com/ryjen/cactus-hackathon/tree/main/src/features/clues-creation), and [sharing](https://github.com/ryjen/cactus-hackathon/tree/main/src/features/game-share); its package manifest declares `expo-camera` and `cactus-react-native`. It is a **separate design reference**, not a released Achillea feature, source dependency, proof of integration, or authorization to add camera/AI permissions to this demo. No code or assets from that repository are redistributed here.
+
 ## Proposed production contract (not implemented)
 
 A future Achillea content-pack proposal would have to define a schema identifier, immutable package identity/version, approved renderer/rules references, supported host versions, allowed capabilities, a signed publisher/release identity independent of the download transport, strict sizes and parsing bounds, safe update/revocation/rollback, and the behavior for missing or stale content. A version digest alone is insufficient if the adversary also controls its source.
