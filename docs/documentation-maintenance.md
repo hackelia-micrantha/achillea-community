@@ -1,6 +1,6 @@
 # Public documentation maintenance
 
-**Adoption:** The [Micrantha documentation-sync skill](https://github.com/hackelia-micrantha/.github/blob/main/skills/documentation-sync/SKILL.md) applies unchanged. This project-local contract adds only Achillea-specific authority, evidence, validation, and publication boundaries.
+**Adoption:** [Micrantha documentation standard](https://github.com/hackelia-micrantha/.github/blob/main/docs/standards/documentation.md), including public-claim consistency. This project-local contract adds only Achillea-specific authority, evidence, validation, and publication boundaries.
 
 ## Ownership and publication boundary
 
@@ -35,4 +35,4 @@ The public Cloudflare site and example have separate build/live HTTP evidence re
 
 Reconcile these documents after public specification/fixture changes, private product release milestones, rights/licensing or publication decisions, site deployment changes, platform/runtime parity evidence, and new security/privacy claims. Prefer the owning public-validation issue over duplicate CI plans.
 
-Use the shared `DOC-Q*` queue for material unresolved license, release-support, publication or normative-behavior decisions. This adoption authorizes no repository visibility change, private-source promotion, release, site deployment, or infrastructure mutation.
+Refer material unresolved license, release-support, publication or normative-behavior decisions to the accountable maintainer before publication. This adoption authorizes no repository visibility change, private-source promotion, release, site deployment, or infrastructure mutation.
